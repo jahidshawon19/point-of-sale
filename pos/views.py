@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from pos.models import Category, Product
-from pos.forms import CategoryForm, ProductForm
+from pos.models import Category, Product, Customer
+from pos.forms import CategoryForm, ProductForm, CustomerForm
 from django.contrib.auth.decorators import login_required
-
+from django.core.paginator import Paginator
 # Create your views here.
 
 @login_required
@@ -116,3 +116,50 @@ def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
     product.delete()
     return redirect('product_list')
+
+
+
+# Customer list with pagination and search
+def customer_list(request):
+    query = request.GET.get('q')
+    if query:
+        customers = Customer.objects.filter(name__icontains=query) | Customer.objects.filter(mobile_no__icontains=query)
+    else:
+        customers = Customer.objects.all()
+    
+    paginator = Paginator(customers, 10)  # 10 per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'pos/customer_list.html', {'page_obj': page_obj, 'query': query})
+
+# Add customer
+def customer_create(request):
+    if request.method == "POST":
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_list')
+    else:
+        form = CustomerForm()
+    return render(request, 'pos/customer_form.html', {'form': form})
+
+# Edit customer
+def customer_update(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == "POST":
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect('customer_list')
+    else:
+        form = CustomerForm(instance=customer)
+    return render(request, 'pos/customer_form.html', {'form': form})
+
+# Delete customer
+def customer_delete(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == "POST":
+        customer.delete()
+        return redirect('customer_list')
+    return render(request, 'pos/customer_confirm_delete.html', {'customer': customer})

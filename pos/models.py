@@ -77,3 +77,19 @@ class Product(models.Model):
         elif self.stock_quantity <= 5:
             return "Low Stock"
         return "In Stock"
+    
+
+
+# customer models
+
+from django.db import models
+
+class Customer(models.Model):
+
+    name = models.CharField(max_length=255)
+    mobile_no = models.CharField(max_length=11, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name

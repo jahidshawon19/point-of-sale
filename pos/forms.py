@@ -38,3 +38,18 @@ class ProductForm(forms.ModelForm):
                 'placeholder': 'Enter stock quantity'
             }),
         }
+
+
+
+from django import forms
+from .models import Customer
+
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['name', 'mobile_no']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter customer name'}),
+            'mobile_no': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter mobile number'}),
+         
+        }

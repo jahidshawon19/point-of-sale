@@ -1,0 +1,14 @@
+{% extends 'pos/base.html' %}
+{% load static %}
+{% block title %}Customer Form{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Customer</h2>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{% url 'customer_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
