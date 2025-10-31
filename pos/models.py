@@ -39,11 +39,7 @@ class Category(models.Model):
 
 class Product(models.Model):
     name = models.CharField(max_length=150)
-    image = models.URLField(
-        blank=True, 
-        null=True,
-        help_text="Optional: provide an image URL for the product."
-    )
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,

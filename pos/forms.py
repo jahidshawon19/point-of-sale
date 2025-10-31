@@ -23,9 +23,8 @@ class ProductForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Enter product name'
             }),
-            'image': forms.URLInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter image URL'
+            'image': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
             }),
             'category': forms.Select(attrs={
                 'class': 'form-select'

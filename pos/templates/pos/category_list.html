@@ -4,7 +4,7 @@
 {% block title %}Category - POS{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Category List</h2>
+<h2 class="mb-4">Categories</h2>
 
 <div class="row">
     <div class="col-lg-4">
@@ -13,7 +13,13 @@
 </div>
     </div>
     <div class="col-lg-4"></div>
-    <div class="col-lg-4"></div>
+    <div class="col-lg-2"></div>
+    <div class="col-lg-2">
+        <a href="{% url 'category_create' %}" class="btn btn-success">
+               Add Categories
+           </a>
+    </div>
+
 </div>
 
 <div class="lu-table-wrapper">
@@ -26,6 +32,7 @@
                 <th>Updated Date</th>
                 <th>Created By</th>
                 <th>Updated By</th>
+                 <th>Actions</th>
             </tr>
         </thead>
     <tbody>
