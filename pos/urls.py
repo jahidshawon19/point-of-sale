@@ -1,0 +1,17 @@
+from django.urls import path
+from pos import views 
+
+urlpatterns = [
+    path('', views.index, name='index'),
+    # Category URLs
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/create/', views.category_create, name='category_create'),
+    path('categories/update/<int:pk>/', views.category_update, name='category_update'),
+    path('categories/delete/<int:pk>/', views.category_delete, name='category_delete'),
+
+    # Product URLs (example)
+    path('products/', views.product_list, name='product_list'),
+    path('products/create/', views.product_create, name='product_create'),
+    path('products/update/<int:pk>/', views.product_update, name='product_update'),
+    path('products/delete/<int:pk>/', views.product_delete, name='product_delete'),
+]

@@ -1,0 +1,12 @@
+{% extends 'pos/base.html' %}
+{% block content %}
+<div class="card p-4 shadow-sm">
+    <h3>{{ title }}</h3>
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Save</button>
+        <a href="{% url 'category_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

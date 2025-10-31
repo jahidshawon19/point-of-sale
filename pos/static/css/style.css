@@ -1,0 +1,223 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f7fa;
+}
+
+#wrapper {
+    display: flex;
+    width: 100%;
+}
+
+/* Sidebar styling */
+#sidebar-wrapper {
+    min-width: 250px;
+    max-width: 250px;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #4b6cb7, #182848) !important;
+    color: #fff;
+}
+
+/* Sidebar links */
+#sidebar-wrapper .list-group-item {
+    border: none;
+    font-weight: 500;
+    transition: 0.3s;
+    background: transparent; /* ensure transparency so gradient shows */
+    color: #fff;
+}
+
+#sidebar-wrapper .list-group-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Page content */
+#page-content-wrapper {
+    flex: 1;
+}
+
+/* Metrics cards */
+.card-metric {
+    border-radius: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-metric:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+}
+
+/* Gradient cards */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #43e97b, #38f9d7);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #f85032, #e73827);
+}
+
+
+/* Lucrative search box */
+.lu-search {
+    width: 100%;
+    padding: 12px 20px 12px 45px; /* space for icon */
+    border-radius: 30px;
+    border: 2px solid #667eea;
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+    background-image: url('data:image/svg+xml,%3Csvg fill="%23667eea" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"%3E%3Cpath d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/%3E%3C/svg%3E');
+    background-repeat: no-repeat;
+    background-size: 20px;
+    background-position: 12px center;
+}
+
+/* Focus effect */
+.lu-search:focus {
+    border: 2px solid #764ba2;
+    box-shadow: 0 0 10px rgba(118,75,162,0.6);
+}
+
+/* Lucrative table wrapper */
+.lu-table-wrapper {
+    overflow-x: auto;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border: none;
+}
+
+/* Table styling */
+.lu-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 700px; /* ensures responsive scroll */
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.lu-table thead th {
+    background: linear-gradient(180deg, #4b6cb7, #182848) !important;
+    color: #fff;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+    padding: 12px;
+    transition: all 0.3s ease;
+}
+
+.lu-table tbody td {
+    background: #fff;
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+    transition: all 0.3s ease;
+}
+
+/* Hover row effect */
+.lu-table tbody tr:hover td {
+    background: #f3f4f7;
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+/* Rounded corners for table */
+.lu-table thead tr:first-child th:first-child {
+    border-top-left-radius: 1rem;
+}
+.lu-table thead tr:first-child th:last-child {
+    border-top-right-radius: 1rem;
+}
+.lu-table tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 1rem;
+}
+.lu-table tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 1rem;
+}
+
+
+
+/* pagination */
+
+
+
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.pagination-container button {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: #fff;
+    padding: 6px 14px;
+    margin: 0 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.pagination-container button:hover {
+    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    transform: translateY(-2px);
+}
+
+.pagination-container button.active {
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+    font-weight: 600;
+}
+
+
+/* login style */
+
+/* Lucrative gradient background */
+.login-bg {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* Glassmorphism login card */
+.login-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    color: #fff;
+}
+
+/* Gradient text */
+.text-gradient {
+    background: linear-gradient(90deg, #f6d365, #fda085);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Gradient button */
+.btn-gradient {
+    background: linear-gradient(135deg, #43cea2, #185a9d);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-gradient:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #185a9d, #43cea2);
+}
