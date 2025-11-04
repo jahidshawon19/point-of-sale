@@ -20,4 +20,10 @@ urlpatterns = [
     path('customers/add/', views.customer_create, name='customer_add'),
     path('customers/<int:pk>/edit/', views.customer_update, name='customer_edit'),
     path('customers/<int:pk>/delete/', views.customer_delete, name='customer_delete'),
+
+    path('sales/', views.sales_page, name='sales'),
+    path('invoice/<int:sale_id>/', views.invoice_page, name='invoice'),
+
+    path('sales-records/', views.sales_record_list, name='sales_record_list'),
+    path('sales-records/<int:sale_id>/', views.sales_record_detail, name='sales_record_detail'),
 ]
