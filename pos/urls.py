@@ -26,4 +26,6 @@ urlpatterns = [
 
     path('sales-records/', views.sales_record_list, name='sales_record_list'),
     path('sales-records/<int:sale_id>/', views.sales_record_detail, name='sales_record_detail'),
+
+     path('create-user/', views.create_user, name='create_user'),
 ]

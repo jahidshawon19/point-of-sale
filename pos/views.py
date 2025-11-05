@@ -7,21 +7,50 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from decimal import Decimal
 from django.db.models import Sum
+from django.db.models.functions import TruncDate, TruncMonth
+import datetime
+from django.contrib.auth.decorators import login_required, user_passes_test
 # Create your views here.
 
 @login_required
 def index(request):
+    # Summary totals
     total_sales = Sale.objects.aggregate(total_amount_sum=Sum('total_amount'))['total_amount_sum'] or 0
     total_products = Product.objects.count()
     total_customers = Customer.objects.count()
+    
 
-    context = {
+    # Daily sales (last 7 days)
+    daily_sales_qs = (
+        Sale.objects
+        .annotate(day=TruncDate('date'))
+        .values('day')
+        .annotate(total=Sum('total_amount'))
+        .order_by('day')
+    )
+    daily_labels = [d['day'].strftime('%b %d') for d in daily_sales_qs]
+    daily_values = [float(d['total']) for d in daily_sales_qs]
+
+    # Monthly sales (this year)
+    monthly_sales_qs = (
+        Sale.objects
+        .annotate(month=TruncMonth('date'))
+        .values('month')
+        .annotate(total=Sum('total_amount'))
+        .order_by('month')
+    )
+    monthly_labels = [m['month'].strftime('%b %Y') for m in monthly_sales_qs]
+    monthly_values = [float(m['total']) for m in monthly_sales_qs]
+
+    return render(request, 'pos/index.html', {
         'total_sales': total_sales,
         'total_products': total_products,
         'total_customers': total_customers,
-    }
-
-    return render(request, 'pos/index.html', context)
+        'daily_labels': daily_labels,
+        'daily_values': daily_values,
+        'monthly_labels': monthly_labels,
+        'monthly_values': monthly_values,
+    })
 
 
 @login_required
@@ -133,6 +162,7 @@ def product_delete(request, pk):
 
 
 # Customer list with pagination and search
+@login_required
 def customer_list(request):
     query = request.GET.get('q')
     if query:
@@ -147,6 +177,7 @@ def customer_list(request):
     return render(request, 'pos/customer_list.html', {'page_obj': page_obj, 'query': query})
 
 # Add customer
+@login_required
 def customer_create(request):
     if request.method == "POST":
         form = CustomerForm(request.POST)
@@ -158,6 +189,7 @@ def customer_create(request):
     return render(request, 'pos/customer_form.html', {'form': form})
 
 # Edit customer
+@login_required
 def customer_update(request, pk):
     customer = get_object_or_404(Customer, pk=pk)
     if request.method == "POST":
@@ -170,6 +202,7 @@ def customer_update(request, pk):
     return render(request, 'pos/customer_form.html', {'form': form})
 
 # Delete customer
+@login_required
 def customer_delete(request, pk):
     customer = get_object_or_404(Customer, pk=pk)
     if request.method == "POST":
@@ -181,6 +214,7 @@ def customer_delete(request, pk):
 
 
 # Sales page
+@login_required
 def sales_page(request):
     products = Product.objects.all()
     customers = Customer.objects.all()
@@ -229,6 +263,7 @@ def sales_page(request):
     return render(request, 'pos/sales.html', {'products': products, 'customers': customers})
 
 # Invoice page
+@login_required
 def invoice_page(request, sale_id):
     sale = get_object_or_404(Sale, id=sale_id)
     items = sale.items.all()  # related_name='items' in SaleItem
@@ -238,12 +273,13 @@ def invoice_page(request, sale_id):
     })
 
 
-
-
+@login_required
 def sales_record_list(request):
     sales = Sale.objects.order_by('-date')  # newest first
     return render(request, 'pos/sales_record.html', {'sales': sales})
 
+
+@login_required
 def sales_record_detail(request, sale_id):
     sale = get_object_or_404(Sale, id=sale_id)
     items = sale.items.all()  # related_name='items' in SaleItem
@@ -251,3 +287,25 @@ def sales_record_detail(request, sale_id):
         'sale': sale,
         'items': items
     })
+
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def create_user(request):
+    from .forms import CreateUserForm
+    from django.contrib import messages
+    from django.contrib.auth.models import User
+
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            messages.success(request, f'User {user.username} created successfully!')
+            return redirect('user_list')
+    else:
+        form = CreateUserForm()
+
+    return render(request, 'pos/create_user.html', {'form': form})

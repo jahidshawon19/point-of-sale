@@ -1,5 +1,8 @@
 from django import forms
 from pos.models import Category, Product
+from django import forms
+from .models import Customer
+from django.contrib.auth.models import User
 
 class CategoryForm(forms.ModelForm):
     class Meta:
@@ -41,8 +44,7 @@ class ProductForm(forms.ModelForm):
 
 
 
-from django import forms
-from .models import Customer
+
 
 class CustomerForm(forms.ModelForm):
     class Meta:
@@ -53,3 +55,12 @@ class CustomerForm(forms.ModelForm):
             'mobile_no': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter mobile number'}),
          
         }
+
+
+
+class CreateUserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput())
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'is_staff', 'is_superuser']

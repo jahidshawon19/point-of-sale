@@ -1,0 +1,10 @@
+{% extends 'pos/base.html' %}
+{% block content %}
+<div class="container mt-5">
+  <h3>Confirm logout</h3>
+  <form method="post">{% csrf_token %}
+    <button class="btn btn-danger" type="submit">Yes, logout</button>
+    <a href="{% url 'index' %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

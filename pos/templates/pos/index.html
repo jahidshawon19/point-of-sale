@@ -3,45 +3,72 @@
 {% block title %}Dashboard - POS{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Dashboard Overview</h2>
+<h2 class="mb-4">📊 Dashboard Overview</h2>
 
-<div class="row g-4">
+<div class="row g-4 mb-4">
     <div class="col-md-3">
         <div class="card card-metric bg-gradient-primary text-white shadow">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h6>Total Sales</h6>
-                        <h3>${{total_sales}}</h3>
+                        <h3>${{ total_sales }}</h3>
                     </div>
                     <i class="bi bi-currency-dollar display-4 opacity-25"></i>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="col-md-3">
         <div class="card card-metric bg-gradient-success text-white shadow">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6>Inventory</h6>
-                        <h3>{{total_products}}</h3>
+                        <h6>Total Products</h6>
+                        <h3>{{ total_products }}</h3>
                     </div>
                     <i class="bi bi-box-seam display-4 opacity-25"></i>
                 </div>
             </div>
         </div>
     </div>
-        <div class="col-md-3">
+
+    <div class="col-md-3">
         <div class="card card-metric bg-gradient-warning text-white shadow">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6>Customer</h6>
-                        <h3>{{total_customers}}</h3>
+                        <h6>Total Customers</h6>
+                        <h3>{{ total_customers }}</h3>
                     </div>
-                    <i class="bi bi-box-seam display-4 opacity-25"></i>
+                    <i class="bi bi-people-fill display-4 opacity-25"></i>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">📅 Daily Sales (Last 7 Days)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="dailySalesChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">🗓️ Monthly Sales (This Year)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlySalesChart" height="120"></canvas>
             </div>
         </div>
     </div>
@@ -49,5 +76,51 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // DAILY SALES CHART
+        const dailyCtx = document.getElementById('dailySalesChart').getContext('2d');
+        new Chart(dailyCtx, {
+            type: 'line',
+            data: {
+                labels: {{ daily_labels|safe }},
+                datasets: [{
+                    label: 'Daily Sales ($)',
+                    data: {{ daily_values|safe }},
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3,
+                    fill: true,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true } },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // MONTHLY SALES CHART
+        const monthlyCtx = document.getElementById('monthlySalesChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ monthly_labels|safe }},
+                datasets: [{
+                    label: 'Monthly Sales ($)',
+                    data: {{ monthly_values|safe }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                scales: { y: { beginAtZero: true } },
+                plugins: { legend: { display: false } }
+            }
+        });
+    });
+</script>
 {% endblock %}
