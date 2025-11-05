@@ -1,8 +1,17 @@
 from django.contrib import admin
-from .models import Category, Product
+from .models import Category, Product, Customer
 from django.utils.html import format_html
 
 # Register your models here.
+
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'mobile_no', 'created_at', 'updated_at')
+    list_filter = ('name', 'mobile_no')
+    search_fields = ('name',)
+    ordering = ('name',)
+    readonly_fields = ('created_at', 'updated_at')
 
 
 
