@@ -298,7 +298,18 @@ def invoice_page(request, sale_id):
 
 @login_required
 def sales_record_list(request):
-    sales = Sale.objects.order_by('-date')  # newest first
+    sales = Sale.objects.all().select_related('customer', 'created_by').order_by('-date')
+
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if start_date and end_date:
+        sales = sales.filter(date__date__range=[start_date, end_date])
+    elif start_date:
+        sales = sales.filter(date__date__gte=start_date)
+    elif end_date:
+        sales = sales.filter(date__date__lte=end_date)
+
     return render(request, 'pos/sales_record.html', {'sales': sales})
 
 
