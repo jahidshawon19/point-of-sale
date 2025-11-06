@@ -214,6 +214,13 @@ def customer_delete(request, pk):
 
 
 # Sales page
+from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Product, Customer, Sale, SaleItem
+
+
 @login_required
 def sales_page(request):
     products = Product.objects.all()
@@ -224,22 +231,34 @@ def sales_page(request):
         product_ids = request.POST.getlist('product[]')
         quantities = request.POST.getlist('quantity[]')
 
-        # Create Sale
+        # ✅ Create Sale record with logged-in user
         sale = Sale.objects.create(
             customer_id=customer_id,
             total_amount=0,
-            date=timezone.now()
+            date=timezone.now(),
+            created_by=request.user  # NEW FIELD
         )
 
         total_amount = 0
 
+        # ✅ Process each product in the sale
         for prod_id, qty in zip(product_ids, quantities):
+            if not prod_id or not qty:
+                continue
+
             product = Product.objects.get(id=prod_id)
             quantity = int(qty)
+
+            # Prevent selling out-of-stock
+            if quantity > product.stock_quantity:
+                messages.error(request, f"Not enough stock for {product.name}.")
+                sale.delete()
+                return redirect('sales')
+
             unit_price = product.unitprice
             price = unit_price * quantity
 
-            # Create SaleItem
+            # Create SaleItem record
             SaleItem.objects.create(
                 sale=sale,
                 product=product,
@@ -248,19 +267,23 @@ def sales_page(request):
                 price=price
             )
 
-            # Reduce stock
+            # ✅ Reduce product stock
             product.stock_quantity -= quantity
             product.save()
 
             total_amount += price
 
-        # Update total amount
+        # ✅ Update total amount for sale
         sale.total_amount = total_amount
         sale.save()
 
+        messages.success(request, "Sale completed successfully!")
         return redirect('invoice', sale_id=sale.id)
 
-    return render(request, 'pos/sales.html', {'products': products, 'customers': customers})
+    return render(request, 'pos/sales.html', {
+        'products': products,
+        'customers': customers
+    })
 
 # Invoice page
 @login_required

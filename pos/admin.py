@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Customer
+from .models import Category, Product, Customer,Sale
 from django.utils.html import format_html
 
 # Register your models here.
@@ -69,3 +69,8 @@ class ProductAdmin(admin.ModelAdmin):
             color = "green"
         return format_html('<b><span style="color: {};">{}</span></b>', color, status)
     colored_stock_status.short_description = "Stock Status"
+
+@admin.register(Sale)
+class SaleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'total_amount', 'date', 'created_by')
+    list_filter = ('date', 'created_by')
