@@ -3,63 +3,127 @@
 {% block title %}Customer List{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Customer List</h2>
+<div class="container mt-5">
+    <div class="card shadow-lg border-0 rounded-4">
+        <!-- Header -->
+        <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center flex-wrap">
+            <h4 class="mb-0">
+                <i class="bi bi-people-fill me-2"></i> Customer List
+            </h4>
+            <a href="{% url 'customer_add' %}" class="btn btn-light text-primary fw-semibold shadow-sm mt-2 mt-sm-0">
+                <i class="bi bi-person-plus-fill me-1"></i> Add Customer
+            </a>
+        </div>
 
-<div class="mb-3 d-flex justify-content-between">
-    <form method="GET">
-        <input type="text" name="q" class="form-control" placeholder="Search by name or mobile" value="{{ query }}">
-    </form>
-    <a href="{% url 'customer_add' %}" class="btn btn-primary">Add Customer</a>
+        <!-- Search -->
+        <div class="card-body bg-light">
+            <form method="GET" class="mb-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        class="form-control" 
+                        placeholder="Search by name or mobile number..." 
+                        value="{{ query }}"
+                    >
+                    <button class="btn btn-primary" type="submit">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+            </form>
+
+            <!-- Table -->
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle text-center">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Mobile No</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in page_obj %}
+                        <tr>
+                            <td>{{ customer.id }}</td>
+                            <td class="fw-semibold">{{ customer.name }}</td>
+                            <td>{{ customer.mobile_no }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{% url 'customer_edit' customer.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="{% url 'customer_delete' customer.id %}" class="btn btn-sm btn-outline-danger" title="Delete"
+                                       onclick="return confirm('Are you sure you want to delete this customer?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                <i class="bi bi-person-x display-6 d-block mb-2"></i>
+                                No customers found.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <nav aria-label="Customer pagination">
+                <ul class="pagination justify-content-center mt-4">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                            Previous
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">
+                            Next
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Mobile No</th>
-        
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for customer in page_obj %}
-        <tr>
-            <td>{{ customer.id }}</td>
-            <td>{{ customer.name }}</td>
-            <td>{{ customer.mobile_no }}</td>
-            <td>
-                <a href="{% url 'customer_edit' customer.id %}" class="btn btn-sm btn-warning">Edit</a>
-                <a href="{% url 'customer_delete' customer.id %}" class="btn btn-sm btn-danger">Delete</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr><td colspan="5" class="text-center">No customers found</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<!-- Pagination -->
-<nav>
-    <ul class="pagination">
-        {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">Previous</a>
-        </li>
-        {% endif %}
-        {% for num in page_obj.paginator.page_range %}
-            {% if page_obj.number == num %}
-                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-            {% else %}
-                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a></li>
-            {% endif %}
-        {% endfor %}
-        {% if page_obj.has_next %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next</a>
-        </li>
-        {% endif %}
-    </ul>
-</nav>
-
+<!-- Styling -->
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(90deg, #007bff, #0056d2);
+    }
+    .card {
+        border-radius: 1.25rem;
+    }
+    .btn-outline-primary:hover, .btn-outline-danger:hover {
+        transform: translateY(-2px);
+        transition: all 0.2s ease;
+    }
+    .table th {
+        text-transform: uppercase;
+    }
+</style>
 {% endblock %}

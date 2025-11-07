@@ -1,3 +1,4 @@
+
 let tableBody = document.querySelector('#salesTable tbody');
 
 function updateRowTotal(row) {
@@ -22,6 +23,7 @@ function updateGrandTotal() {
     });
     document.getElementById('grandTotal').innerText = `$${total.toFixed(2)}`;
 }
+
 
 document.getElementById('addRow').addEventListener('click', function() {
     const newRow = tableBody.insertRow();
