@@ -42,8 +42,7 @@
             </a>
             {% if user.is_superuser %}
             <li class="nav-item">
-                <a class="list-group-item list-group-item-action bg-transparent text-white" href="{% url 'create_user' %}">
-                    👥 Manage Users
+                <a class="list-group-item list-group-item-action bg-transparent text-white" href="{% url 'create_user' %}">👥 Manage Users
                 </a>
             </li>
             {% endif %}

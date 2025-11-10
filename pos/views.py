@@ -338,7 +338,7 @@ def create_user(request):
             user.set_password(form.cleaned_data['password'])
             user.save()
             messages.success(request, f'User {user.username} created successfully!')
-            return redirect('user_list')
+            return redirect('index')
     else:
         form = CreateUserForm()
 

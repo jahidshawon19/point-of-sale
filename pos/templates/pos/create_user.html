@@ -1,15 +1,93 @@
 {% extends 'pos/base.html' %}
 {% load static %}
+{% block title %}Create New User{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-    <div class="card shadow p-4" style="max-width: 600px; margin: auto;">
-        <h3 class="text-center mb-3">👤 Create New User</h3>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100">Create User</button>
-        </form>
+    <div class="card shadow-lg border-0 rounded-4" style="max-width: 650px; margin: auto;">
+        
+        <!-- Header -->
+        <div class="card-header bg-gradient-primary text-white text-center py-3 rounded-top-4">
+            <h4 class="mb-0">
+                <i class="bi bi-person-plus-fill me-2"></i>
+                Create New User
+            </h4>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body bg-light p-4">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="row g-3">
+                    {% for field in form %}
+                    <div class="col-md-12">
+                        <label class="form-label fw-semibold">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-text text-muted small">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="text-end mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check-circle me-1"></i> Create User
+                    </button>
+                    <a href="#" class="btn btn-secondary px-4 ms-2">
+                        <i class="bi bi-arrow-left me-1"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(90deg, #007bff, #0056d2);
+    }
+    .form-label {
+        color: #333;
+    }
+    input, select {
+        border-radius: 10px !important;
+    }
+    .card {
+        transition: all 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+    }
+    .btn-success {
+        background-color: #198754;
+        border: none;
+        transition: 0.3s ease;
+    }
+    .btn-success:hover {
+        background-color: #157347;
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    // Bootstrap validation
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
 {% endblock %}

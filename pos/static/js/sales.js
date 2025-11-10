@@ -1,6 +1,12 @@
-
 let tableBody = document.querySelector('#salesTable tbody');
+const discountInput = document.getElementById('discount');
+const vatInput = document.getElementById('vat');
+const subtotalEl = document.getElementById('subtotal');
+const discountEl = document.getElementById('discountValue');
+const vatEl = document.getElementById('vatValue');
+const grandTotalEl = document.getElementById('grandTotal');
 
+// Update a row total
 function updateRowTotal(row) {
     const select = row.querySelector('.product-select');
     const qty = row.querySelector('.quantity');
@@ -13,21 +19,33 @@ function updateRowTotal(row) {
     unitPriceInput.value = price.toFixed(2);
     totalPriceInput.value = (price * quantity).toFixed(2);
 
-    updateGrandTotal();
+    updateTotals();
 }
 
-function updateGrandTotal() {
-    let total = 0;
+// Update totals: subtotal, discount, VAT, grand total
+function updateTotals() {
+    let subtotal = 0;
     document.querySelectorAll('.total-price').forEach(input => {
-        total += parseFloat(input.value || 0);
+        subtotal += parseFloat(input.value || 0);
     });
-    document.getElementById('grandTotal').innerText = `$${total.toFixed(2)}`;
+
+    const discountPercent = parseFloat(discountInput.value) || 0;
+    const vatPercent = parseFloat(vatInput.value) || 0;
+
+    const discountAmount = subtotal * (discountPercent / 100);
+    const vatAmount = (subtotal - discountAmount) * (vatPercent / 100);
+    const grandTotal = subtotal - discountAmount + vatAmount;
+
+    // Update UI
+    subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+    discountEl.innerText = `$${discountAmount.toFixed(2)}`;
+    vatEl.innerText = `$${vatAmount.toFixed(2)}`;
+    grandTotalEl.innerText = `$${grandTotal.toFixed(2)}`;
 }
 
-
+// Add new row
 document.getElementById('addRow').addEventListener('click', function() {
     const newRow = tableBody.insertRow();
-
     const productOptions = Array.from(document.querySelector('.product-select').options)
         .map(opt => `<option value="${opt.value}" data-price="${opt.dataset.price}">${opt.text}</option>`).join('');
 
@@ -47,7 +65,12 @@ document.getElementById('addRow').addEventListener('click', function() {
 
     select.addEventListener('change', () => updateRowTotal(newRow));
     qty.addEventListener('input', () => updateRowTotal(newRow));
+    updateTotals();
 });
+
+// Event listeners for discount and VAT input changes
+discountInput.addEventListener('input', updateTotals);
+vatInput.addEventListener('input', updateTotals);
 
 // Initialize first row
 document.querySelectorAll('#salesTable tbody tr').forEach(row => {
