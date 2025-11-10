@@ -10,7 +10,12 @@ from django.db.models import Sum
 from django.db.models.functions import TruncDate, TruncMonth
 import datetime
 from django.contrib.auth.decorators import login_required, user_passes_test
-# Create your views here.
+from django.contrib import messages
+
+
+
+
+# Create my views here.
 
 @login_required
 def index(request):
@@ -214,11 +219,6 @@ def customer_delete(request, pk):
 
 
 # Sales page
-from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import Product, Customer, Sale, SaleItem
 
 
 @login_required
@@ -230,35 +230,28 @@ def sales_page(request):
         customer_id = request.POST.get('customer')
         product_ids = request.POST.getlist('product[]')
         quantities = request.POST.getlist('quantity[]')
+        discount_percent = Decimal(request.POST.get('discount') or 0)
+        vat_percent = Decimal(request.POST.get('vat') or 0)
 
-        # ✅ Create Sale record with logged-in user
+        # Create Sale
         sale = Sale.objects.create(
             customer_id=customer_id,
-            total_amount=0,
+            total_amount=Decimal('0.00'),
             date=timezone.now(),
-            created_by=request.user  # NEW FIELD
+            discount=discount_percent,
+            vat=vat_percent,
+            created_by=request.user
         )
 
-        total_amount = 0
+        total_amount = Decimal('0.00')
 
-        # ✅ Process each product in the sale
         for prod_id, qty in zip(product_ids, quantities):
-            if not prod_id or not qty:
-                continue
-
             product = Product.objects.get(id=prod_id)
             quantity = int(qty)
-
-            # Prevent selling out-of-stock
-            if quantity > product.stock_quantity:
-                messages.error(request, f"Not enough stock for {product.name}.")
-                sale.delete()
-                return redirect('sales')
-
             unit_price = product.unitprice
-            price = unit_price * quantity
+            price = Decimal(unit_price) * quantity
 
-            # Create SaleItem record
+            # Create SaleItem
             SaleItem.objects.create(
                 sale=sale,
                 product=product,
@@ -267,23 +260,24 @@ def sales_page(request):
                 price=price
             )
 
-            # ✅ Reduce product stock
+            # Reduce stock
             product.stock_quantity -= quantity
             product.save()
 
             total_amount += price
 
-        # ✅ Update total amount for sale
-        sale.total_amount = total_amount
+        # Apply discount and VAT
+        discount_amount = total_amount * (discount_percent / Decimal('100'))
+        vat_amount = (total_amount - discount_amount) * (vat_percent / Decimal('100'))
+        grand_total = total_amount - discount_amount + vat_amount
+
+        # Update sale totals
+        sale.total_amount = grand_total
         sale.save()
 
-        messages.success(request, "Sale completed successfully!")
         return redirect('invoice', sale_id=sale.id)
 
-    return render(request, 'pos/sales.html', {
-        'products': products,
-        'customers': customers
-    })
+    return render(request, 'pos/sales.html', {'products': products, 'customers': customers})
 
 # Invoice page
 @login_required

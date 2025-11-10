@@ -97,10 +97,13 @@ class Customer(models.Model):
 
 class Sale(models.Model):
     customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)  # %
+    vat = models.DecimalField(max_digits=5, decimal_places=2, default=0) 
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)
     date = models.DateTimeField(default=timezone.now) 
+    created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    
     def __str__(self):
         return f"Sale #{self.id} - {self.customer.name}"
 
