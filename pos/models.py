@@ -95,6 +95,8 @@ class Customer(models.Model):
         return self.name
 
 
+from decimal import Decimal
+
 class Sale(models.Model):
     customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0)  # %
@@ -103,9 +105,30 @@ class Sale(models.Model):
     date = models.DateTimeField(default=timezone.now) 
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    
+
     def __str__(self):
         return f"Sale #{self.id} - {self.customer.name}"
+
+    @property
+    def subtotal(self):
+        """Sum of all item prices (before discount and VAT)."""
+        return sum(item.price for item in self.items.all())  # use related_name='items' in SaleItem FK
+
+    @property
+    def discount_amount(self):
+        """Discount value in currency."""
+        return (self.subtotal * self.discount / Decimal('100.00')).quantize(Decimal('0.01'))
+
+    @property
+    def vat_amount(self):
+        """VAT applied after discount."""
+        return ((self.subtotal - self.discount_amount) * self.vat / Decimal('100.00')).quantize(Decimal('0.01'))
+
+    @property
+    def grand_total(self):
+        """Final total after discount and VAT."""
+        return (self.subtotal - self.discount_amount + self.vat_amount).quantize(Decimal('0.01'))
+
 
 class SaleItem(models.Model):
     sale = models.ForeignKey(Sale, on_delete=models.CASCADE, related_name='items')
@@ -113,6 +136,12 @@ class SaleItem(models.Model):
     quantity = models.PositiveIntegerField()
     unit_price = models.DecimalField(max_digits=12, decimal_places=2)
     price = models.DecimalField(max_digits=12, decimal_places=2)
+
+    @property
+    def calculated_unit_price(self):
+        if self.quantity:
+            return self.price / self.quantity
+        return self.price
 
     def __str__(self):
         return f"{self.product.name} x {self.quantity}"
