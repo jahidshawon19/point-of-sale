@@ -71,7 +71,9 @@
     <div id="page-content-wrapper" class="w-100">
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom">
             <button class="btn btn-light" id="menu-toggle"><i class="bi bi-list"></i></button>
-            <div class="mr-auto">Welcome, Admin</div>
+            {% if user.is_authenticated %}
+            <div class="mr-auto">Welcome, {{ user.username }}</div>
+            {% endif %}
         </nav>
 
         <div class="container-fluid mt-4">
