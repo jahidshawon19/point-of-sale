@@ -3,6 +3,7 @@
 {% block title %}New Sale - POS{% endblock %}
 
 {% block content %}
+
 <div class="container mt-5">
     <form method="POST">
         {% csrf_token %}
@@ -42,10 +43,20 @@
                                         <td>
                                             <select class="form-select product-select" name="product[]" required>
                                                 <option value="">-- Select Product --</option>
+                                                <!-- {% for product in products %}
+                                                    <option value="{{ product.id }}" 
+                                                            data-price="{{ product.unitprice }}" 
+                                                            data-stock="{{ product.stock_quantity }}">
+                                                        {{ product.name }}
+                                                    </option>
+                                                {% endfor %} -->
+
                                                 {% for product in products %}
-                                                <option value="{{ product.id }}" data-price="{{ product.unitprice }}">
+                                                {% if product.stock_status != 'out_of_stock' and product.stock_quantity > 0 %}
+                                                <option value="{{ product.id }}" data-price="{{ product.unitprice }}" data-stock="{{ product.stock_quantity }}">
                                                     {{ product.name }}
                                                 </option>
+                                                {% endif %}
                                                 {% endfor %}
                                             </select>
                                         </td>

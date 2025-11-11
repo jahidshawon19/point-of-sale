@@ -217,13 +217,10 @@ def customer_delete(request, pk):
 
 
 
-
-# Sales page
-
-
 @login_required
 def sales_page(request):
-    products = Product.objects.all()
+    # Only show products that are in stock
+    products = Product.objects.filter(stock_quantity__gt=0)
     customers = Customer.objects.all()
 
     if request.method == 'POST':
@@ -248,6 +245,17 @@ def sales_page(request):
         for prod_id, qty in zip(product_ids, quantities):
             product = Product.objects.get(id=prod_id)
             quantity = int(qty)
+
+            # ✅ Check stock before creating SaleItem
+            if quantity > product.stock_quantity:
+                messages.error(
+                    request,
+                    f"Cannot sell {quantity} × {product.name}. Only {product.stock_quantity} left in stock."
+                )
+                # Delete partially created sale
+                sale.delete()
+                return redirect('sales')
+
             unit_price = product.unitprice
             price = Decimal(unit_price) * quantity
 
@@ -260,7 +268,7 @@ def sales_page(request):
                 price=price
             )
 
-            # Reduce stock
+            # Reduce stock safely
             product.stock_quantity -= quantity
             product.save()
 
@@ -278,6 +286,9 @@ def sales_page(request):
         return redirect('invoice', sale_id=sale.id)
 
     return render(request, 'pos/sales.html', {'products': products, 'customers': customers})
+
+
+
 
 # Invoice page
 @login_required

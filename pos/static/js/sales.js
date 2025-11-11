@@ -16,6 +16,12 @@ function updateRowTotal(row) {
     const price = parseFloat(select.selectedOptions[0]?.dataset.price || 0);
     const quantity = parseInt(qty.value || 1);
 
+    // Stock validation
+    if (quantity > stock) {
+        alert(`⚠️ Not enough stock available! Only ${stock} left.`);
+        qty.value = stock;  // reset to max allowed
+    }
+
     unitPriceInput.value = price.toFixed(2);
     totalPriceInput.value = (price * quantity).toFixed(2);
 
