@@ -35,8 +35,8 @@
 
             <!-- Table -->
             <div class="table-responsive">
-                <table class="table table-striped table-bordered align-middle text-center">
-                    <thead class="table-primary">
+                <table class="table table-striped table-bordered align-middle text-center table-hover">
+                    <thead class="table-primary text-uppercase">
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
@@ -110,7 +110,7 @@
     </div>
 </div>
 
-<!-- Styling -->
+<!-- Custom Styles -->
 <style>
     .bg-gradient-primary {
         background: linear-gradient(90deg, #007bff, #0056d2);
@@ -124,6 +124,9 @@
     }
     .table th {
         text-transform: uppercase;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f1f5f9;
     }
 </style>
 {% endblock %}
