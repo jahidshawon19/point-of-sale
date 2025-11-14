@@ -11,7 +11,7 @@ from django.db.models.functions import TruncDate, TruncMonth
 import datetime
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-
+from django.db.models import Sum, F
 
 
 
@@ -308,14 +308,26 @@ def sales_record_list(request):
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
 
+    # Filter sales by date
     if start_date and end_date:
         sales = sales.filter(date__date__range=[start_date, end_date])
+
     elif start_date:
         sales = sales.filter(date__date__gte=start_date)
+
     elif end_date:
         sales = sales.filter(date__date__lte=end_date)
 
-    return render(request, 'pos/sales_record.html', {'sales': sales})
+    # Calculate total sales for the filtered range
+    total_sales = sales.aggregate(total=Sum('total_amount'))['total'] or 0
+
+    context = {
+        'sales': sales,
+        'total_sales': total_sales,
+    }
+
+    return render(request, 'pos/sales_record.html', context)
+
 
 
 @login_required
@@ -348,3 +360,7 @@ def create_user(request):
         form = CreateUserForm()
 
     return render(request, 'pos/create_user.html', {'form': form})
+
+
+
+
