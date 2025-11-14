@@ -13,7 +13,7 @@ body {
     min-width: 250px;
     max-width: 250px;
     min-height: 100vh;
-    background: linear-gradient(180deg, #4b6cb7, #182848) !important;
+    background: #2C3E50; 
     color: #fff;
 }
 
@@ -23,7 +23,7 @@ body {
     font-weight: 500;
     transition: 0.3s;
     background: transparent; /* ensure transparency so gradient shows */
-    color: #fff;
+    color: #ECF0F1;
 }
 
 #sidebar-wrapper .list-group-item:hover {
@@ -49,15 +49,18 @@ body {
 
 /* Gradient cards */
 .bg-gradient-primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    /* background: linear-gradient(135deg, #667eea, #764ba2); */
+    background-color: #1ABC9C;
 }
 
 .bg-gradient-success {
-    background: linear-gradient(135deg, #43e97b, #38f9d7);
+    /* background: linear-gradient(135deg, #43e97b, #38f9d7); */
+    background-color: #9B59B6;
 }
 
 .bg-gradient-warning {
-    background: linear-gradient(135deg, #f7971e, #ffd200);
+    /* background: linear-gradient(135deg, #f7971e, #ffd200); */
+    background-color: #F39C12;
 }
 
 .bg-gradient-danger {
