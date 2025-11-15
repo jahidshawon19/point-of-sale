@@ -203,12 +203,7 @@ body {
     color: #fff;
 }
 
-/* Gradient text */
-.text-gradient {
-    background: linear-gradient(90deg, #f6d365, #fda085);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+
 
 /* Gradient button */
 .btn-gradient {
