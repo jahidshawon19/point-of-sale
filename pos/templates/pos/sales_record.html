@@ -5,41 +5,7 @@
 {% block content %}
 <div class="container mt-5">
 
-    <!-- 🔥 TOP 3 BEST SELLING PRODUCTS -->
-<div class="card shadow-lg border-0 rounded-4 mb-4">
-    <div class="card-header bg-success text-white fw-semibold">
-        <i class="bi bi-bar-chart-line me-2"></i> Top 3 Best-Selling Products
-    </div>
 
-    <div class="card-body bg-light">
-        {% if best_selling %}
-        <div class="table-responsive">
-            <table class="table table-bordered text-center align-middle">
-                <thead class="table-success">
-                    <tr>
-                        <th>Rank</th>
-                        <th>Product</th>
-                        <th>Total Quantity Sold</th>
-                        <th>Total Revenue ($)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in best_selling %}
-                    <tr>
-                        <td><span class="badge bg-primary">{{ forloop.counter }}</span></td>
-                        <td class="fw-bold">{{ item.product__name }}</td>
-                        <td>{{ item.total_qty }}</td>
-                        <td class="text-success fw-bold">${{ item.total_revenue }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <p class="text-muted text-center mb-0">No sales data available.</p>
-        {% endif %}
-    </div>
-</div>
 
 
     <!-- 🔹 Page Header -->

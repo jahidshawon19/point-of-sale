@@ -17,13 +17,73 @@ from django.db.models import Sum, F
 
 # Create my views here.
 
+# @login_required
+# def index(request):
+#     # Summary totals
+#     total_sales = Sale.objects.aggregate(total_amount_sum=Sum('total_amount'))['total_amount_sum'] or 0
+#     total_products = Product.objects.count()
+#     total_customers = Customer.objects.count()
+    
+
+#     # Daily sales (last 7 days)
+#     daily_sales_qs = (
+#         Sale.objects
+#         .annotate(day=TruncDate('date'))
+#         .values('day')
+#         .annotate(total=Sum('total_amount'))
+#         .order_by('day')
+#     )
+#     daily_labels = [d['day'].strftime('%b %d') for d in daily_sales_qs]
+#     daily_values = [float(d['total']) for d in daily_sales_qs]
+
+#     # Monthly sales (this year)
+#     monthly_sales_qs = (
+#         Sale.objects
+#         .annotate(month=TruncMonth('date'))
+#         .values('month')
+#         .annotate(total=Sum('total_amount'))
+#         .order_by('month')
+#     )
+#     monthly_labels = [m['month'].strftime('%b %Y') for m in monthly_sales_qs]
+#     monthly_values = [float(m['total']) for m in monthly_sales_qs]
+#         # 🔹 Best-selling products (Top 3)
+#     best_selling = (
+#         SaleItem.objects
+#         .filter(sale__in=sales)
+#         .values('product__name')
+#         .annotate(
+#             total_qty=Sum('quantity'),
+#             total_revenue=Sum('price')
+#         )
+#         .order_by('-total_qty')[:3]
+#     )
+
+#     return render(request, 'pos/index.html', {
+#         'total_sales': total_sales,
+#         'total_products': total_products,
+#         'total_customers': total_customers,
+#         'daily_labels': daily_labels,
+#         'daily_values': daily_values,
+#         'monthly_labels': monthly_labels,
+#         'monthly_values': monthly_values,
+#         'best_selling': best_selling,
+#     })
+
+
+###################################################################
+from django.db.models import Sum
+from django.db.models.functions import TruncDate, TruncMonth
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def index(request):
     # Summary totals
-    total_sales = Sale.objects.aggregate(total_amount_sum=Sum('total_amount'))['total_amount_sum'] or 0
+    total_sales = Sale.objects.aggregate(
+        total_amount_sum=Sum('total_amount')
+    )['total_amount_sum'] or 0
+    
     total_products = Product.objects.count()
     total_customers = Customer.objects.count()
-    
 
     # Daily sales (last 7 days)
     daily_sales_qs = (
@@ -47,6 +107,17 @@ def index(request):
     monthly_labels = [m['month'].strftime('%b %Y') for m in monthly_sales_qs]
     monthly_values = [float(m['total']) for m in monthly_sales_qs]
 
+    # ✅ Best-selling products (Top 3)
+    best_selling = (
+        SaleItem.objects
+        .values('product__name')
+        .annotate(
+            total_qty=Sum('quantity'),
+            total_revenue=Sum('price')
+        )
+        .order_by('-total_qty')[:3]
+    )
+
     return render(request, 'pos/index.html', {
         'total_sales': total_sales,
         'total_products': total_products,
@@ -55,7 +126,9 @@ def index(request):
         'daily_values': daily_values,
         'monthly_labels': monthly_labels,
         'monthly_values': monthly_values,
+        'best_selling': best_selling,
     })
+
 
 
 @login_required
@@ -321,22 +394,12 @@ def sales_record_list(request):
     # Calculate total sales for the filtered range
     total_sales = sales.aggregate(total=Sum('total_amount'))['total'] or 0
 
-    # 🔹 Best-selling products (Top 3)
-    best_selling = (
-        SaleItem.objects
-        .filter(sale__in=sales)
-        .values('product__name')
-        .annotate(
-            total_qty=Sum('quantity'),
-            total_revenue=Sum('price')
-        )
-        .order_by('-total_qty')[:3]
-    )
+
 
     context = {
         'sales': sales,
         'total_sales': total_sales,
-        'best_selling': best_selling,
+        
     }
 
     return render(request, 'pos/sales_record.html', context)
