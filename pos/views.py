@@ -12,6 +12,7 @@ import datetime
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Sum, F
+from django.http import JsonResponse
 
 
 
@@ -292,7 +293,7 @@ def customer_delete(request, pk):
 
 @login_required
 def sales_page(request):
-    # Only show products that are in stock
+    # Show only products in stock
     products = Product.objects.filter(stock_quantity__gt=0)
     customers = Customer.objects.all()
 
@@ -303,7 +304,12 @@ def sales_page(request):
         discount_percent = Decimal(request.POST.get('discount') or 0)
         vat_percent = Decimal(request.POST.get('vat') or 0)
 
-        # Create Sale
+        # Validate customer selection
+        if not customer_id:
+            messages.error(request, "Please select a customer before completing the sale.")
+            return redirect('sales')
+
+        # Create sale
         sale = Sale.objects.create(
             customer_id=customer_id,
             total_amount=Decimal('0.00'),
@@ -319,20 +325,19 @@ def sales_page(request):
             product = Product.objects.get(id=prod_id)
             quantity = int(qty)
 
-            # ✅ Check stock before creating SaleItem
+            # Check stock
             if quantity > product.stock_quantity:
                 messages.error(
                     request,
                     f"Cannot sell {quantity} × {product.name}. Only {product.stock_quantity} left in stock."
                 )
-                # Delete partially created sale
-                sale.delete()
+                sale.delete()  # remove partial sale
                 return redirect('sales')
 
             unit_price = product.unitprice
             price = Decimal(unit_price) * quantity
 
-            # Create SaleItem
+            # Create sale item
             SaleItem.objects.create(
                 sale=sale,
                 product=product,
@@ -341,7 +346,7 @@ def sales_page(request):
                 price=price
             )
 
-            # Reduce stock safely
+            # Reduce stock
             product.stock_quantity -= quantity
             product.save()
 
@@ -356,11 +361,10 @@ def sales_page(request):
         sale.total_amount = grand_total
         sale.save()
 
+        messages.success(request, "Sale completed successfully!")
         return redirect('invoice', sale_id=sale.id)
 
     return render(request, 'pos/sales.html', {'products': products, 'customers': customers})
-
-
 
 
 # Invoice page
@@ -436,6 +440,27 @@ def create_user(request):
         form = CreateUserForm()
 
     return render(request, 'pos/create_user.html', {'form': form})
+
+
+
+
+@login_required
+def customer_add_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        mobile_no = request.POST.get('mobile_no')
+
+        if not name or not mobile_no:
+            return JsonResponse({'error': 'Name and mobile number are required.'})
+
+        # Optional: Check for duplicate mobile number
+        if Customer.objects.filter(mobile_no=mobile_no).exists():
+            return JsonResponse({'error': 'A customer with this mobile number already exists.'})
+
+        customer = Customer.objects.create(name=name, mobile_no=mobile_no)
+        return JsonResponse({'id': customer.id, 'name': customer.name})
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
 

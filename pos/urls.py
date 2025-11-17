@@ -29,6 +29,8 @@ urlpatterns = [
 
     path('create-user/', views.create_user, name='create_user'),
 
+    path('customer/add-ajax/', views.customer_add_ajax, name='customer_add_ajax'),
+    
   
 
 

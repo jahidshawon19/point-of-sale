@@ -4,6 +4,16 @@
 
 {% block content %}
 <div class="container mt-5">
+
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
         <div class="card shadow-lg border-0 rounded-4">
@@ -12,7 +22,6 @@
             <div class="card-header bg-gradient-primary text-white d-flex justify-content-between align-items-center">
                 <h4 class="mb-0"><i class="bi bi-bag-check-fill me-2"></i> New Sale</h4>
                 <div class="d-flex flex-column">
-
                     <label for="customerSelect" class="form-label mb-1 fw-semibold text-white">Customer</label>
                     <select id="customerSelect" name="customer" class="form-select" required>
                         <option value="">-- Select Customer --</option>
@@ -21,11 +30,31 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="d-flex flex-column">
-                                    <a href="{% url 'customer_add' %}" class="btn btn-light text-primary fw-semibold shadow-sm mt-2 mt-sm-0">
-                <i class="bi bi-person-plus-fill me-1"></i> Add Customer
-                </a>
+            </div>
+
+            <!-- INLINE ADD CUSTOMER FORM -->
+            <div class="bg-light p-3 border-bottom">
+                <h5 class="fw-bold">Add New Customer</h5>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label">Name</label>
+                        <input type="text" id="newCustomerName" class="form-control" placeholder="Customer Name">
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label">Mobile No</label>
+                        <input type="text" id="newCustomerMobile" class="form-control" placeholder="Mobile Number">
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="button" id="addCustomerBtn" class="btn btn-success w-100">
+                            <i class="bi bi-plus-circle me-1"></i> Add
+                        </button>
+                    </div>
                 </div>
+
+                <!-- Message -->
+                <p id="customerMessage" class="mt-2 fw-semibold"></p>
             </div>
 
             <!-- Body -->
@@ -106,8 +135,7 @@
 </div>
 
 <style>
-
-.bg-gradient-danger { background: linear-gradient(90deg, #dc3545, #a71d2a); }
+.bg-gradient-primary { background: linear-gradient(90deg, #007bff, #0056d2); }
 .btn-outline-primary { transition: 0.3s; }
 .btn-outline-primary:hover { transform: translateY(-2px); }
 .table thead th { text-transform: uppercase; }
@@ -116,4 +144,44 @@
 
 {% block extra_js %}
 <script src="{% static 'js/sales.js' %}"></script>
+
+<script>
+// Inline Add Customer (AJAX with reload)
+document.getElementById("addCustomerBtn").addEventListener("click", function () {
+    const name = document.getElementById("newCustomerName").value.trim();
+    const mobile = document.getElementById("newCustomerMobile").value.trim();
+    const message = document.getElementById("customerMessage");
+
+    if (!name || !mobile) {
+        message.innerHTML = "⚠ Please enter both name and mobile number.";
+        message.className = "text-danger fw-semibold";
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("mobile_no", mobile);
+    formData.append("csrfmiddlewaretoken", document.querySelector("[name=csrfmiddlewaretoken]").value);
+
+    fetch("{% url 'customer_add_ajax' %}", {
+        method: "POST",
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            message.innerHTML = "❌ " + data.error;
+            message.className = "text-danger fw-semibold";
+            return;
+        }
+
+        // Success message
+        message.innerHTML = "✅ Customer added successfully! Reloading page...";
+        message.className = "text-success fw-semibold";
+
+        // Wait 1 second and reload page so the dropdown updates from database
+        setTimeout(() => { window.location.reload(); }, 1000);
+    });
+});
+</script>
 {% endblock %}
