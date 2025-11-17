@@ -321,9 +321,22 @@ def sales_record_list(request):
     # Calculate total sales for the filtered range
     total_sales = sales.aggregate(total=Sum('total_amount'))['total'] or 0
 
+    # 🔹 Best-selling products (Top 3)
+    best_selling = (
+        SaleItem.objects
+        .filter(sale__in=sales)
+        .values('product__name')
+        .annotate(
+            total_qty=Sum('quantity'),
+            total_revenue=Sum('price')
+        )
+        .order_by('-total_qty')[:3]
+    )
+
     context = {
         'sales': sales,
         'total_sales': total_sales,
+        'best_selling': best_selling,
     }
 
     return render(request, 'pos/sales_record.html', context)
