@@ -22,7 +22,7 @@
                 <div class="row g-3">
                     {% for field in form %}
                     <div class="col-md-12">
-                        <label class="form-label fw-semibold">{{ field.label }}</label>
+                        <label class="form-label fw-semibold">{{ field.label }}</label> <br>
                         {{ field }}
                         {% if field.help_text %}
                             <div class="form-text text-muted small">{{ field.help_text }}</div>
