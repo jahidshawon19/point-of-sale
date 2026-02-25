@@ -2,24 +2,27 @@
 {% load static %}
 {% block content %}
 <style>
-    /* Hide all non-invoice elements when printing */
+    /* Print Settings */
     @media print {
+
+        /* Hide sidebar and navbar */
         #sidebar-wrapper, nav {
-            visibility: hidden; /* hide everything by default */
+            display: none !important;
         }
 
-        #invoice, #invoice * {
-            visibility: visible; /* only show invoice */
+        /* Hide print button */
+        .no-print {
+            display: none !important;
         }
 
+        /* Show only invoice */
         #invoice {
-            position: absolute;
-            left: 0;
-            top: 0;
             width: 100%;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Optional: remove shadow or borders */
+        /* Remove shadows for clean print */
         .card, .card-body {
             box-shadow: none !important;
         }
@@ -37,8 +40,8 @@
         <div class="row">
             <div class="col-lg-4"></div>
             <div class="col-lg-4 text-center">
-                <h3 class="mt-1">TextPoint</h3>
-                <p>Amin Center, Lalkhan Bazar, Chittagong</p>
+                <h3 class="mt-1">Apex Tech</h3>
+                <p>Friedrichstraße 120, 10117 Berlin, Germany</p>
             </div>
             <div class="col-lg-4"></div>
         </div>
@@ -91,9 +94,11 @@
 
             <p class="text-center mt-5">Developed by Jahid Shawon</p>
 
-            <div class="mt-3 text-end">
+            <!-- Print Button (Hidden in Print Mode) -->
+            <div class="mt-3 text-end no-print">
                 <button class="btn btn-success" onclick="window.print()">🖨️ Print Invoice</button>
             </div>
+
         </div>
     </div>
 </div>
