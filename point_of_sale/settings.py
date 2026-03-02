@@ -1,5 +1,5 @@
 from pathlib import Path
-
+import os 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-o@+lwhsrplm6&by2z!5js=4(ddbs*1hdtt5f4_knr0oqk_c@e6'
@@ -49,7 +49,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'point_of_sale.wsgi.application'
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ✅ Database
 DATABASES = {
@@ -78,11 +78,13 @@ USE_TZ = True
 
 # ✅ Static files (CSS, JS, Images)
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [
-    BASE_DIR / 'pos' / 'static',  # your app’s static folder
+    os.path.join(BASE_DIR, 'static'),
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # optional (for collectstatic)
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 # ✅ Default primary key field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
