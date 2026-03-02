@@ -3,8 +3,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-o@+lwhsrplm6&by2z!5js=4(ddbs*1hdtt5f4_knr0oqk_c@e6'
-DEBUG = True
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ['.onrender.com']
 
 
 # Application definition
@@ -20,6 +20,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -81,6 +82,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'pos' / 'static',  # your app’s static folder
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # optional (for collectstatic)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ✅ Default primary key field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
