@@ -21,140 +21,188 @@
         body {
             margin: 0;
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea, #764ba2);
             overflow: hidden;
         }
 
-        /* Glass Card */
+        .login-wrapper {
+            height: 100vh;
+            display: flex;
+        }
+
+        /* LEFT SIDE BRAND PANEL */
+        .brand-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #4e73df, #1cc88a);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .brand-panel h1 {
+            font-weight: 700;
+            font-size: 32px;
+        }
+
+        .brand-panel p {
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        /* RIGHT SIDE LOGIN */
+        .login-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fc;
+        }
+
         .login-card {
             width: 400px;
-            padding: 40px 30px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            color: white;
-            animation: fadeIn 0.8s ease;
+            padding: 40px;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.6s ease;
         }
 
-        .login-title {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .login-title h3 {
+        .login-card h3 {
             font-weight: 600;
             margin-bottom: 5px;
         }
 
-        .login-title p {
+        .login-card p {
             font-size: 0.9rem;
-            opacity: 0.8;
+            color: #6c757d;
         }
 
-        /* Floating Labels */
-        .form-floating > .form-control {
-            border-radius: 12px;
-            border: none;
+        .form-control {
+            border-radius: 10px;
+            padding: 10px 12px;
         }
 
         .form-control:focus {
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+            box-shadow: none;
+            border-color: #4e73df;
         }
 
-        .form-floating label {
-            color: #6c757d;
-        }
-
-        .input-icon {
-            position: absolute;
-            top: 50%;
-            left: 15px;
-            transform: translateY(-50%);
-            color: #6c757d;
-            z-index: 10;
-        }
-
-        .form-floating input {
-            padding-left: 45px;
-        }
-
-        /* Login Button */
         .btn-login {
-            border-radius: 12px;
+            border-radius: 10px;
             padding: 10px;
             font-weight: 500;
-            background: white;
-            color: #5a67d8;
-            transition: all 0.3s ease;
+            background-color: #4e73df;
+            border: none;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            background-color: #2e59d9;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
         }
 
         .login-footer {
             text-align: center;
             margin-top: 20px;
             font-size: 0.8rem;
-            opacity: 0.8;
+            color: #6c757d;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .brand-panel {
+                display: none;
+            }
+
+            .login-panel {
+                flex: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="login-card">
+<div class="login-wrapper">
 
-    <div class="login-title">
-        <h3>🧾 Epsilon POS System</h3>
-        <p>Please login to continue</p>
+    <!-- LEFT BRAND PANEL -->
+    <div class="brand-panel">
+        <h1>🧾 Epsilon POS</h1>
+        <p>Smart. Fast. Reliable.</p>
+        <p class="mt-4">Manage sales, inventory & customers<br>with ease.</p>
     </div>
 
-    <form method="post">
-        {% csrf_token %}
+    <!-- RIGHT LOGIN PANEL -->
+    <div class="login-panel">
+        <div class="login-card">
 
-        <div class="form-floating mb-3 position-relative">
-            
-            <input type="text" name="username" class="form-control" id="username" placeholder="Username" required>
-            <label for="username">Username</label>
-        </div>
+            <h3>Welcome Back</h3>
+            <p>Please login to your account</p>
 
-        <div class="form-floating mb-3 position-relative">
-           
-            <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
-            <label for="password">Password</label>
-        </div>
+            <form method="post" class="mt-4">
+                {% csrf_token %}
 
-        {% if form.errors %}
-            <div class="alert alert-danger py-2">
-                Invalid username or password.
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" class="form-control" required>
+                </div>
+
+                <div class="mb-3 position-relative">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" id="password" required>
+                    <i class="bi bi-eye password-toggle" onclick="togglePassword()"></i>
+                </div>
+
+                {% if form.errors %}
+                <div class="alert alert-danger py-2">
+                    Invalid username or password.
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-login w-100 mt-2">
+                    Login
+                </button>
+            </form>
+
+            <div class="login-footer">
+                © {{ now|date:"Y" }} Epsilon POS System<br>
+                Developed by Jahid Shawon
             </div>
-        {% endif %}
 
-        <button type="submit" class="btn btn-login w-100">Login</button>
-    </form>
-
-    <div class="login-footer">
-        © {{ now|date:"Y" }} Developed by Jahid Shawon
+        </div>
     </div>
 
 </div>
 
-<!-- Optional: Show/Hide Password -->
 <script>
-    const passwordInput = document.getElementById("password");
-    passwordInput.addEventListener("dblclick", function () {
-        this.type = this.type === "password" ? "text" : "password";
-    });
+    function togglePassword() {
+        const input = document.getElementById("password");
+        const icon = document.querySelector(".password-toggle");
+
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
 </script>
 
 </body>
