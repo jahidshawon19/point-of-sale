@@ -1,106 +1,160 @@
 {% extends 'pos/base.html' %}
 {% load static %}
 {% block content %}
+
 <style>
+    body {
+        background-color: #f4f6f9;
+    }
+
+    .invoice-wrapper {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    .invoice-header {
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .invoice-title {
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .company-name {
+        font-weight: 600;
+        font-size: 22px;
+    }
+
+    .invoice-summary li {
+        font-size: 15px;
+    }
+
     /* Print Settings */
     @media print {
 
-        /* Hide sidebar and navbar */
+        body {
+            background: none;
+        }
+
         #sidebar-wrapper, nav {
             display: none !important;
         }
 
-        /* Hide print button */
         .no-print {
             display: none !important;
         }
 
-        /* Show only invoice */
-        #invoice {
-            width: 100%;
-            margin: 0;
-            padding: 0;
+        .card {
+            border: none !important;
         }
 
-        /* Remove shadows for clean print */
-        .card, .card-body {
+        .shadow-lg {
             box-shadow: none !important;
+        }
+
+        .invoice-wrapper {
+            width: 100%;
+            margin: 0;
         }
     }
 </style>
 
-<div class="invoice" id="invoice">
-<div class="container mt-5">
-    <div class="card p-4 shadow-lg rounded-4">
-        <div class="card-header bg-primary text-white d-flex justify-content-between">
-            <h4>Invoice #{{ sale.id }}</h4>
-            <span>{{ sale.date|date:"d M Y H:i" }}</span>
-        </div>
+<div class="invoice-wrapper mt-5" id="invoice">
+    <div class="card shadow-lg rounded-4 p-4">
 
-        <div class="row">
-            <div class="col-lg-4"></div>
-            <div class="col-lg-4 text-center">
-                <h3 class="mt-1">Apex Tech</h3>
-                <p>Friedrichstraße 120, 10117 Berlin, Germany</p>
+        <!-- Header -->
+        <div class="invoice-header d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="invoice-title text-primary">INVOICE</h3>
+                <small class="text-muted">Invoice #{{ sale.id }}</small><br>
+                <small class="text-muted">{{ sale.date|date:"d M Y H:i" }}</small>
             </div>
-            <div class="col-lg-4"></div>
+
+            <div class="text-end">
+                <div class="company-name">Apex Tech</div>
+                <small>Friedrichstraße 120</small><br>
+                <small>10117 Berlin, Germany</small>
+            </div>
         </div>
 
-        <div class="card-body">
-            <h6>Customer: {{ sale.customer.name }}</h6>
-            <h6>Phone: {{ sale.customer.mobile_no }}</h6>
+        <!-- Customer & Prepared Info -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6 class="text-muted">Bill To:</h6>
+                <strong>{{ sale.customer.name }}</strong><br>
+                <small>Phone: {{ sale.customer.mobile_no }}</small>
+            </div>
 
-            <table class="table table-bordered mt-3">
-                <thead class="table-dark">
+            <div class="col-md-6 text-md-end">
+                <h6 class="text-muted">Prepared By:</h6>
+                <strong>{{ sale.created_by }}</strong>
+            </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-primary text-center">
                     <tr>
                         <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Unit Price</th>
-                        <th>Price</th>
+                        <th width="100">Qty</th>
+                        <th width="150">Unit Price</th>
+                        <th width="150">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in sale.items.all %}
                     <tr>
                         <td>{{ item.product.name }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>${{ item.calculated_unit_price|floatformat:2 }}</td>
-                        <td>${{ item.price|floatformat:2 }}</td>
+                        <td class="text-center">{{ item.quantity }}</td>
+                        <td class="text-end">${{ item.calculated_unit_price|floatformat:2 }}</td>
+                        <td class="text-end">${{ item.price|floatformat:2 }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
 
-            <div class="text-end mt-3">
-                <ul class="list-group" style="width: 300px; margin-left: auto;">
+        <!-- Summary Section -->
+        <div class="row mt-4">
+            <div class="col-md-6"></div>
+            <div class="col-md-6">
+                <ul class="list-group invoice-summary">
                     <li class="list-group-item d-flex justify-content-between">
                         <span>Subtotal:</span>
                         <strong>${{ sale.subtotal|floatformat:2 }}</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span>Discount ({{ sale.discount }}%):</span>
-                        <strong>${{ sale.discount_amount|floatformat:2 }}</strong>
+                        <strong>- ${{ sale.discount_amount|floatformat:2 }}</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span>VAT ({{ sale.vat }}%):</span>
                         <strong>${{ sale.vat_amount|floatformat:2 }}</strong>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between fw-bold bg-success text-white">
+                    <li class="list-group-item d-flex justify-content-between bg-success text-white fw-bold">
                         <span>Grand Total:</span>
-                        <strong>${{ sale.grand_total|floatformat:2 }}</strong>
+                        <span>${{ sale.grand_total|floatformat:2 }}</span>
                     </li>
                 </ul>
             </div>
-
-            <p class="text-center mt-5">Developed by Jahid Shawon</p>
-
-            <!-- Print Button (Hidden in Print Mode) -->
-            <div class="mt-3 text-end no-print">
-                <button class="btn btn-success" onclick="window.print()">🖨️ Print Invoice</button>
-            </div>
-
         </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-5 text-muted">
+            <small>Thank you for your business!</small><br>
+            <small>Developed by Jahid Shawon</small>
+        </div>
+
+        <!-- Print Button -->
+        <div class="mt-4 text-end no-print">
+            <button class="btn btn-primary px-4" onclick="window.print()">🖨️ Print Invoice</button>
+        </div>
+
     </div>
 </div>
-</div>
+
 {% endblock %}
